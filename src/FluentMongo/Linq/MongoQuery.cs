@@ -14,7 +14,7 @@ namespace FluentMongo.Linq
     internal class MongoQuery<T> : IOrderedQueryable<T>, IMongoQueryable
     {
         private readonly Expression _expression;
-        private readonly MongoQueryProvider _provider;
+        private readonly IMongoQueryProvider _provider;
 
         /// <summary>
         /// Gets the expression tree that is associated with the instance of <see cref="T:System.Linq.IQueryable"/>.
@@ -65,7 +65,7 @@ namespace FluentMongo.Linq
         /// Initializes a new instance of the <see cref="MongoQuery&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="provider">The provider.</param>
-        public MongoQuery(MongoQueryProvider provider)
+        public MongoQuery(IMongoQueryProvider provider)
         {
             if (provider == null)
                 throw new ArgumentNullException("provider");
@@ -79,7 +79,7 @@ namespace FluentMongo.Linq
         /// </summary>
         /// <param name="provider">The provider.</param>
         /// <param name="expression">The expression.</param>
-        public MongoQuery(MongoQueryProvider provider, Expression expression)
+        public MongoQuery(IMongoQueryProvider provider, Expression expression)
         {
             if (provider == null)
                 throw new ArgumentNullException("provider");

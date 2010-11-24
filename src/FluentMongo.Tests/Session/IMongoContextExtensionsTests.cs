@@ -26,7 +26,7 @@ namespace FluentMongo.Session
             var context = new MongoContext(_database);
 
             var queryable = context.Find<TestClass>();
-            Assert.AreEqual("TestClass", ((MongoQueryProvider)queryable.Provider).Collection.Name);
+            Assert.AreEqual("TestClass", ((IMongoQueryProvider)queryable.Provider).Collection.Name);
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace FluentMongo.Session
             var context = new MongoContext(_database);
 
             var queryable = context.Find<TestClass>();
-            Assert.AreEqual("testClass", ((MongoQueryProvider)queryable.Provider).Collection.Name);
+            Assert.AreEqual("testClass", ((IMongoQueryProvider)queryable.Provider).Collection.Name);
         }
     }
 }

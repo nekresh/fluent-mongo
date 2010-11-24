@@ -18,11 +18,19 @@ namespace FluentMongo.Session
         private static string GetCollectionName(Type type)
         {
             var classMap = BsonClassMap.LookupClassMap(type);
+            return GetCollectionName(classMap);
+        }
+
+        private static string GetCollectionName(BsonClassMap classMap)
+        {
+            if (classMap.BaseClassMap != null)
+                return GetCollectionName(classMap.BaseClassMap);
+
             ICollectionNameConvention convention;
             if (!classMap.TryGetExtension<ICollectionNameConvention>(out convention))
                 convention = new TypeNameCollectionNameConvention();
 
-            return convention.GetCollectionName(type);
+            return convention.GetCollectionName(classMap.ClassType);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace FluentMongo.Linq
     /// <summary>
     /// 
     /// </summary>
-    internal class MongoQueryProvider : IQueryProvider
+    internal class MongoQueryProvider : IMongoQueryProvider
     {
         private readonly MongoCollection _collection;
 
@@ -112,28 +112,28 @@ namespace FluentMongo.Linq
         }
 
         /// <summary>
-        /// Gets the query object.
-        /// </summary>
-        /// <param name="expression">The expression.</param>
-        /// <returns></returns>
-        internal MongoQueryObject GetQueryObject(Expression expression)
-        {
-            var projection = Translate(expression);
-            return new MongoQueryObjectBuilder().Build(projection);
-        }
-
-        /// <summary>
         /// Executes the query object.
         /// </summary>
         /// <param name="queryObject">The query object.</param>
         /// <returns></returns>
-        internal object ExecuteQueryObject(MongoQueryObject queryObject)
+        public object ExecuteQueryObject(MongoQueryObject queryObject)
         {
             if (queryObject.IsCount)
                 return ExecuteCount(queryObject);
             if (queryObject.IsMapReduce)
                 return ExecuteMapReduce(queryObject);
             return ExecuteFind(queryObject);
+        }
+
+        /// <summary>
+        /// Gets the query object.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
+        public MongoQueryObject GetQueryObject(Expression expression)
+        {
+            var projection = Translate(expression);
+            return new MongoQueryObjectBuilder().Build(projection);
         }
 
         private Expression BuildExecutionPlan(Expression expression)
@@ -147,7 +147,7 @@ namespace FluentMongo.Linq
             var rootQueryable = new RootQueryableFinder().Find(expression);
             var provider = Expression.Convert(
                 Expression.Property(rootQueryable, typeof(IQueryable).GetProperty("Provider")),
-                typeof(MongoQueryProvider));
+                typeof(IMongoQueryProvider));
 
             return new ExecutionBuilder().Build(projection, provider);
         }
@@ -297,7 +297,7 @@ namespace FluentMongo.Linq
         {
             var documents = Expression.Parameter(typeof(IEnumerable), "documents");
             Expression body = Expression.Call(
-                typeof(MongoQueryProvider),
+                typeof(IMongoQueryProvider),
                 "Project",
                 new[] { documentType, projector.Body.Type },
                 documents,

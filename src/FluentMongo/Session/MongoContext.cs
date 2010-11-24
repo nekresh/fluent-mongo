@@ -12,16 +12,25 @@ namespace FluentMongo.Session
 {
     public class MongoContext : IMongoContext
     {
+        private readonly EntityCache _entityCache;
+
         public MongoDB.Driver.MongoDatabase Database { get; private set; }
 
         public MongoContext(MongoDatabase database)
         {
             Database = database;
+            _entityCache = new EntityCache();
         }
 
         public IQueryable<T> Find<T>(string collectionName)
         {
-            return Database.GetCollection<T>(collectionName).AsQueryable();
+            var classMap = BsonClassMap.LookupClassMap(typeof(T));
+            var collection = Database.GetCollection<T>(collectionName);
+
+            return new MongoQuery<T>(new CacheableQueryProvider(
+                classMap,
+                _entityCache,
+                new MongoQueryProvider(collection)));
         }
 
         public void Remove<T>(string collectionName, T entity)
@@ -36,7 +45,7 @@ namespace FluentMongo.Session
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
     }
