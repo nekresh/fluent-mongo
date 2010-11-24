@@ -100,6 +100,13 @@
     <Compile Include="Linq\Util\ScopedDictionary.cs" />
     <Compile Include="Linq\Util\TypeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Session\Conventions\CamelCasedCollectionNameConvention.cs" />
+    <Compile Include="Session\Conventions\ICollectionNameConvention.cs" />
+    <Compile Include="Session\Conventions\TypeNameCollectionNameConvention.cs" />
+    <Compile Include="Session\IMongoContext.cs" />
+    <Compile Include="Session\IMongoContextExtensions.cs" />
+    <Compile Include="Session\IMongoContextFactory.cs" />
+    <Compile Include="Session\MongoContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\packages\mongo-csharp-driver\Bson\Bson.csproj">

@@ -13,3 +13,4 @@ App_Data
 *.orig
 *.user
 *.generated.*
+*.vs10x
