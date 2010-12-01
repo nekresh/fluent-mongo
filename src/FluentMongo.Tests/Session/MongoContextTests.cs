@@ -72,7 +72,7 @@ namespace FluentMongo.Session
         {
             using (var context = new MongoContext(_database))
             {
-                var people = context.Find<Person>().Where(x => x.Age > 21).ToList();
+                var people = context.Find<Person>("people").Where(x => x.Age > 21).ToList();
             }
         }
     }

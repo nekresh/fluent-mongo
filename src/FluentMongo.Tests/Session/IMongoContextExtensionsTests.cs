@@ -25,19 +25,19 @@ namespace FluentMongo.Session
         {
             var context = new MongoContext(_database);
 
-            var queryable = context.Find<TestClass>();
-            Assert.AreEqual("TestClass", ((IMongoQueryProvider)queryable.Provider).Collection.Name);
+            var queryable = context.Find<TestClass>("test");
+            Assert.AreEqual("TestClass", ((MongoQueryProvider)queryable.Provider).Collection.Name);
         }
 
         [Test]
         public void Should_use_registered_ICollectionNameConvention_when_one_exists()
         {
             var classMap = BsonClassMap.LookupClassMap(typeof(TestClass));
-            classMap.SetExtension<ICollectionNameConvention>(new CamelCasedCollectionNameConvention());
+            //classMap.SetExtension<ICollectionNameConvention>(new CamelCasedCollectionNameConvention());
             var context = new MongoContext(_database);
 
-            var queryable = context.Find<TestClass>();
-            Assert.AreEqual("testClass", ((IMongoQueryProvider)queryable.Provider).Collection.Name);
+            var queryable = context.Find<TestClass>("test");
+            Assert.AreEqual("testClass", ((MongoQueryProvider)queryable.Provider).Collection.Name);
         }
     }
 }

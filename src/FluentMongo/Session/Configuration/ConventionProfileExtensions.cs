@@ -12,8 +12,9 @@ namespace FluentMongo.Session.Configuration
     {
         public static ConventionProfile SetCollectionNameConvention(this ConventionProfile profile, ICollectionNameConvention convention)
         {
-            profile.SetExtension<ICollectionNameConvention>(convention);
-            return profile;
+            throw new NotSupportedException();
+            //profile.SetExtension<ICollectionNameConvention>(convention);
+            //return profile;
         }
     }
 }

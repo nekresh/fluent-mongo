@@ -9,28 +9,29 @@ namespace FluentMongo.Session
 {
     public static class IMongoContextExtensions
     {
-        public static IQueryable<T> Find<T>(this IMongoContext context)
+        public static IQueryable<T> Find<T>(this IMongoContext context, string collectionName)
         {
-            var collectionName = GetCollectionName(typeof(T));
             return context.Find<T>(collectionName);
         }
 
         private static string GetCollectionName(Type type)
         {
-            var classMap = BsonClassMap.LookupClassMap(type);
-            return GetCollectionName(classMap);
+            throw new NotSupportedException();
+            //var classMap = BsonClassMap.LookupClassMap(type);
+            //return GetCollectionName(classMap);
         }
 
         private static string GetCollectionName(BsonClassMap classMap)
         {
-            if (classMap.BaseClassMap != null)
-                return GetCollectionName(classMap.BaseClassMap);
+            throw new NotSupportedException();
+            //if (classMap.BaseClassMap != null)
+            //    return GetCollectionName(classMap.BaseClassMap);
 
-            ICollectionNameConvention convention;
-            if (!classMap.TryGetExtension<ICollectionNameConvention>(out convention))
-                convention = new TypeNameCollectionNameConvention();
+            //ICollectionNameConvention convention;
+            //if (!classMap.TryGetExtension<ICollectionNameConvention>(out convention))
+            //    convention = new TypeNameCollectionNameConvention();
 
-            return convention.GetCollectionName(classMap.ClassType);
+            //return convention.GetCollectionName(classMap.ClassType);
         }
     }
 }

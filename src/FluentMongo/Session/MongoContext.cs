@@ -27,10 +27,10 @@ namespace FluentMongo.Session
             var classMap = BsonClassMap.LookupClassMap(typeof(T));
             var collection = Database.GetCollection<T>(collectionName);
 
-            return new MongoQuery<T>(new CacheableQueryProvider(
-                classMap,
-                _entityCache,
-                new MongoQueryProvider(collection)));
+            return new CacheableQuery<T>(
+                new MongoQuery<T>(new CacheableQueryProvider(collection, classMap, _entityCache)), 
+                classMap, 
+                _entityCache);
         }
 
         public void Remove<T>(string collectionName, T entity)

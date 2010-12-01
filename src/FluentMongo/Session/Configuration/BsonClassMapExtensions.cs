@@ -13,8 +13,9 @@ namespace FluentMongo.Session.Configuration
     {
         public static BsonClassMap SetCollectionName(this BsonClassMap classMap, string collectionName)
         {
-            classMap.SetExtension<ICollectionNameConvention>(new SpecifiedCollectionNameConvention(collectionName));
-            return classMap;
+            throw new NotSupportedException();
+            //classMap.SetExtension<ICollectionNameConvention>(new SpecifiedCollectionNameConvention(collectionName));
+            //return classMap;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace FluentMongo.Linq
     /// <summary>
     /// 
     /// </summary>
-    internal class MongoQueryProvider : IMongoQueryProvider
+    internal class MongoQueryProvider : IQueryProvider
     {
         private readonly MongoCollection _collection;
 
@@ -49,7 +49,7 @@ namespace FluentMongo.Linq
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
-        public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
+        public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             return new MongoQuery<TElement>(this, expression);
         }
@@ -61,7 +61,7 @@ namespace FluentMongo.Linq
         /// <returns>
         /// An <see cref="T:System.Linq.IQueryable"/> that can evaluate the query represented by the specified expression tree.
         /// </returns>
-        public IQueryable CreateQuery(Expression expression)
+        public virtual IQueryable CreateQuery(Expression expression)
         {
             Type elementType = TypeHelper.GetElementType(expression.Type);
             try
@@ -147,7 +147,7 @@ namespace FluentMongo.Linq
             var rootQueryable = new RootQueryableFinder().Find(expression);
             var provider = Expression.Convert(
                 Expression.Property(rootQueryable, typeof(IQueryable).GetProperty("Provider")),
-                typeof(IMongoQueryProvider));
+                typeof(MongoQueryProvider));
 
             return new ExecutionBuilder().Build(projection, provider);
         }
@@ -297,7 +297,7 @@ namespace FluentMongo.Linq
         {
             var documents = Expression.Parameter(typeof(IEnumerable), "documents");
             Expression body = Expression.Call(
-                typeof(IMongoQueryProvider),
+                typeof(MongoQueryProvider),
                 "Project",
                 new[] { documentType, projector.Body.Type },
                 documents,
