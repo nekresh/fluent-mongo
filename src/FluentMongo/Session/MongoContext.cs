@@ -7,19 +7,20 @@ using FluentMongo.Linq;
 using MongoDB.Driver;
 using MongoDB.Bson.DefaultSerializer;
 using FluentMongo.Session.Conventions;
+using FluentMongo.Session.Cache;
 
 namespace FluentMongo.Session
 {
     public class MongoContext : IMongoContext
     {
-        private readonly EntityCache _entityCache;
+        private readonly IChangeTracker _changeTracker;
 
         public MongoDB.Driver.MongoDatabase Database { get; private set; }
 
         public MongoContext(MongoDatabase database)
         {
             Database = database;
-            _entityCache = new EntityCache();
+            _changeTracker = new StandardChangeTracker();
         }
 
         public IQueryable<T> Find<T>(string collectionName)
@@ -28,9 +29,9 @@ namespace FluentMongo.Session
             var collection = Database.GetCollection<T>(collectionName);
 
             return new CacheableQuery<T>(
-                new MongoQuery<T>(new CacheableQueryProvider(collection, classMap, _entityCache)), 
+                new MongoQuery<T>(new CacheableQueryProvider(collection, classMap, _changeTracker)), 
                 classMap, 
-                _entityCache);
+                _changeTracker);
         }
 
         public void Remove<T>(string collectionName, T entity)

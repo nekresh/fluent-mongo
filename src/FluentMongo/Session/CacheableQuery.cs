@@ -5,14 +5,15 @@ using System.Text;
 using FluentMongo.Linq;
 using MongoDB.Bson.DefaultSerializer;
 using System.Collections;
+using FluentMongo.Session.Cache;
 
 namespace FluentMongo.Session
 {
-    public class CacheableQuery<T> : IQueryable<T>
+    internal class CacheableQuery<T> : IQueryable<T>
     {
         private readonly IQueryable<T> _query;
         private readonly BsonClassMap _classMap;
-        private readonly EntityCache _entityCache;
+        private readonly IChangeTracker _changeTracker;
 
         public Type ElementType
         {
@@ -29,16 +30,16 @@ namespace FluentMongo.Session
             get { return _query.Provider; }
         }
 
-        public CacheableQuery(IQueryable<T> query, BsonClassMap classMap, EntityCache entityCache)
+        public CacheableQuery(IQueryable<T> query, BsonClassMap classMap, IChangeTracker changeTracker)
         {
             _query = query;
             _classMap = classMap;
-            _entityCache = entityCache;
+            _changeTracker = changeTracker;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new CacheableQueryEnumerator(_query.GetEnumerator(), _classMap, _entityCache);
+            return new CacheableQueryEnumerator(_query.GetEnumerator(), _classMap, _changeTracker);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -49,7 +50,7 @@ namespace FluentMongo.Session
         private class CacheableQueryEnumerator : IEnumerator<T>
         {
             private readonly BsonClassMap _classMap;
-            private readonly EntityCache _entityCache;
+            private readonly IChangeTracker _changeTracker;
             private readonly IEnumerator<T> _wrapped;
 
             object System.Collections.IEnumerator.Current
@@ -62,11 +63,11 @@ namespace FluentMongo.Session
                 get { return _wrapped.Current; }
             }
 
-            public CacheableQueryEnumerator(IEnumerator<T> wrapped, BsonClassMap classMap, EntityCache entityCache)
+            public CacheableQueryEnumerator(IEnumerator<T> wrapped, BsonClassMap classMap, IChangeTracker changeTracker)
             {
                 _wrapped = wrapped;
                 _classMap = classMap;
-                _entityCache = entityCache;
+                _changeTracker = changeTracker;
             }
 
             public void Dispose()
@@ -79,7 +80,7 @@ namespace FluentMongo.Session
                 var result = _wrapped.MoveNext();
                 if (result)
                 {
-                    _entityCache.Store(_classMap, _wrapped.Current);
+                    _changeTracker.Track(_classMap, Current);
                     //perhaps we should check the cache for this entity and return it instead...
                 }
 
