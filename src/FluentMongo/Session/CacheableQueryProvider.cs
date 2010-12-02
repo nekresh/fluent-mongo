@@ -9,19 +9,17 @@ using System.Linq.Expressions;
 using FluentMongo.Linq.Util;
 using System.Reflection;
 using MongoDB.Driver;
-using FluentMongo.Session.Cache;
+using FluentMongo.Session.Tracking;
 
 namespace FluentMongo.Session
 {
     internal class CacheableQueryProvider : MongoQueryProvider
     {
-        private readonly BsonClassMap _classMap;
         private readonly IChangeTracker _changeTracker;
 
-        public CacheableQueryProvider(MongoCollection collection, BsonClassMap classMap, IChangeTracker changeTracker)
+        public CacheableQueryProvider(MongoCollection collection, IChangeTracker changeTracker)
             : base(collection)
         {
-            _classMap = classMap;
             _changeTracker = changeTracker;
         }
 
@@ -33,7 +31,7 @@ namespace FluentMongo.Session
         /// <returns></returns>
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            return new CacheableQuery<TElement>(base.CreateQuery<TElement>(expression), _classMap, _changeTracker);
+            return new CacheableQuery<TElement>(base.CreateQuery<TElement>(expression), _changeTracker);
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace FluentMongo.Session
             Type elementType = TypeHelper.GetElementType(expression.Type);
             try
             {
-                return (IQueryable)Activator.CreateInstance(typeof(CacheableQuery<>).MakeGenericType(elementType), new object[] { base.CreateQuery(expression), _classMap, _changeTracker });
+                return (IQueryable)Activator.CreateInstance(typeof(CacheableQuery<>).MakeGenericType(elementType), new object[] { base.CreateQuery(expression), _changeTracker });
             }
             catch (TargetInvocationException ex)
             {

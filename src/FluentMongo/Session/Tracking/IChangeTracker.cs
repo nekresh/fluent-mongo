@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using MongoDB.Bson.DefaultSerializer;
 
-namespace FluentMongo.Session.Cache
+namespace FluentMongo.Session.Tracking
 {
-    internal interface IChangeTracker
+    internal interface IChangeTracker : IDisposable
     {
         ITrackedObject GetTrackedObject(object obj);
 
@@ -14,6 +14,6 @@ namespace FluentMongo.Session.Cache
 
         void StopTracking(object obj);
 
-        ITrackedObject Track(BsonClassMap classMap, object obj);
+        ITrackedObject Track(object obj);
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.DefaultSerializer;
 
-namespace FluentMongo.Session.Cache
+namespace FluentMongo.Session.Tracking
 {
     internal interface ITrackedObject
     {
@@ -22,5 +22,17 @@ namespace FluentMongo.Session.Cache
         bool IsModified { get; }
 
         bool IsPossiblyModified { get; }
+
+        void ConvertToDead();
+
+        void ConvertToDeleted();
+
+        void ConvertToModified();
+
+        void ConvertToNew();
+
+        void ConvertToPossiblyModified();
+
+        void ConvertToUnmodified();
     }
 }

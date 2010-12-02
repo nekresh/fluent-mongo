@@ -101,9 +101,10 @@
     <Compile Include="Linq\Util\TypeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session\CacheableQuery.cs" />
-    <Compile Include="Session\Cache\IChangeTracker.cs" />
-    <Compile Include="Session\Cache\ITrackedObject.cs" />
-    <Compile Include="Session\Cache\StandardChangeTracker.cs" />
+    <Compile Include="Session\Tracking\IChangeTracker.cs" />
+    <Compile Include="Session\Tracking\ITrackedObject.cs" />
+    <Compile Include="Session\Tracking\NonTrackedObject.cs" />
+    <Compile Include="Session\Tracking\StandardChangeTracker.cs" />
     <Compile Include="Session\Configuration\ConventionProfileExtensions.cs" />
     <Compile Include="Session\Configuration\BsonClassMapExtensions.cs" />
     <Compile Include="Session\Conventions\CamelCasedCollectionNameConvention.cs" />

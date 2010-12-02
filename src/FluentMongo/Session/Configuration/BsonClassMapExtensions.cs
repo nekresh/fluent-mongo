@@ -11,6 +11,14 @@ namespace FluentMongo.Session.Configuration
 {
     public static class BsonClassMapExtensions
     {
+        public static BsonClassMap GetRootClassMap(this BsonClassMap classMap)
+        {
+            var current = classMap;
+            while (current.BaseClassMap != null)
+                current = current.BaseClassMap;
+            return current;
+        }
+
         public static BsonClassMap SetCollectionName(this BsonClassMap classMap, string collectionName)
         {
             throw new NotSupportedException();

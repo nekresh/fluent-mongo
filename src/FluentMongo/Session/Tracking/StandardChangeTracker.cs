@@ -5,7 +5,7 @@ using System.Text;
 using MongoDB.Bson.DefaultSerializer;
 using MongoDB.Bson;
 
-namespace FluentMongo.Session.Cache
+namespace FluentMongo.Session.Tracking
 {
     internal class StandardChangeTracker : IChangeTracker
     {
@@ -16,15 +16,28 @@ namespace FluentMongo.Session.Cache
             _items = new Dictionary<object, StandardTrackedObject>();
         }
 
+        ~StandardChangeTracker()
+        {
+            Dispose(false);
+        }
+
         public void AcceptChanges()
         {
+            EnsureNotDisposed();
             var list = _items.Values.ToList();
             foreach (var obj in list)
                 obj.AcceptChanges();
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public ITrackedObject GetTrackedObject(object obj)
         {
+            EnsureNotDisposed();
             StandardTrackedObject trackedObject;
             if (!_items.TryGetValue(obj, out trackedObject))
                 return null;
@@ -34,24 +47,49 @@ namespace FluentMongo.Session.Cache
 
         public bool IsTracked(object obj)
         {
+            EnsureNotDisposed();
             return _items.ContainsKey(obj);
         }
 
         public void StopTracking(object obj)
         {
+            EnsureNotDisposed();
             _items.Remove(obj);
         }
 
-        public ITrackedObject Track(BsonClassMap classMap, object obj)
+        public ITrackedObject Track(object obj)
         {
-            var trackedObject = (StandardTrackedObject)GetTrackedObject(obj);
+            EnsureNotDisposed();
+            var trackedObject = GetTrackedObject(obj);
             if (trackedObject == null)
-            {
-                trackedObject = new StandardTrackedObject(classMap, obj, obj.ToBsonDocument());
-                _items.Add(obj, trackedObject);
-            }
+                trackedObject = CreateTrackedObject(obj);
 
             return trackedObject;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            _items.Clear();
+            _items = null;
+        }
+
+        private ITrackedObject CreateTrackedObject(object obj)
+        {
+            var classMap = BsonClassMap.LookupClassMap(obj.GetType());
+            if (classMap.IsAnonymous)
+                return new NonTrackedObject(classMap, obj, obj.ToBsonDocument());
+            var trackedObject = new StandardTrackedObject(classMap, obj, obj.ToBsonDocument());
+            _items.Add(obj, trackedObject);
+            return trackedObject;
+        }
+
+        private void EnsureNotDisposed()
+        {
+            if (_items == null)
+                throw new ObjectDisposedException(GetType().FullName);
         }
 
         private class StandardTrackedObject : ITrackedObject

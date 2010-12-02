@@ -58,6 +58,7 @@
     <Compile Include="Session\Entities.cs" />
     <Compile Include="Session\IMongoContextExtensionsTests.cs" />
     <Compile Include="Session\MongoContextTests.cs" />
+    <Compile Include="Session\Tracking\StandardChangeTrackerTests.cs" />
     <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
