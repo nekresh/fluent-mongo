@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\MongoCollectionExtensions.cs" />
     <Compile Include="Linq\BsonDocumentQuery.cs" />
     <Compile Include="Linq\ExecutionBuilder.cs" />
     <Compile Include="Linq\Expressions\AggregateExpression.cs" />
